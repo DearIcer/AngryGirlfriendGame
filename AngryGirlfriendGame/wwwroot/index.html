@@ -1,0 +1,348 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>哄女友游戏</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background-color: #ffeeff;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ff6699;
+        }
+
+        .chat-container {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AkEEjIV4e8TBwAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAANElEQVQ4y2P8//8/AzUBEwMVwaiBg9ZAlsEY8ApnpCJgeA9GWhrIQsW4GwXDfjBSOxgZGAA/MQgBmYxb5QAAAABJRU5ErkJggg==');
+        }
+
+        .message {
+            margin-bottom: 10px;
+            padding: 10px 15px;
+            border-radius: 18px;
+            max-width: 80%;
+            word-break: break-word;
+            position: relative;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .user-message {
+            background-color: #dcf8c6;
+            align-self: flex-end;
+            margin-left: auto;
+            margin-right: 5px;
+            text-align: right;
+            border-bottom-right-radius: 5px;
+        }
+
+        .girlfriend-message {
+            background-color: #ffebee;
+            align-self: flex-start;
+            margin-right: auto;
+            margin-left: 5px;
+            text-align: left;
+            border-bottom-left-radius: 5px;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        #message-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+        }
+
+        button {
+            background-color: #ff6699;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #ff3377;
+        }
+
+        .score-container {
+            margin-top: 10px;
+            text-align: center;
+            font-weight: bold;
+            color: #ff6699;
+        }
+
+        .attempts-container {
+            margin-top: 5px;
+            text-align: center;
+            color: #666;
+        }
+
+        .emoji {
+            font-size: 1.5em;
+            margin-right: 5px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .restart-btn {
+            margin-top: 10px;
+            background-color: #4caf50;
+        }
+
+        .restart-btn:hover {
+            background-color: #388e3c;
+        }
+
+        /* 消息出现的动画效果 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>哄女友游戏</h1>
+        <p>你的任务是哄好生气的傲娇女友，你有10次机会让分数达到100分！</p>
+    </div>
+
+    <div class="chat-container" id="chat-container"></div>
+
+    <div class="input-container">
+        <input autofocus id="message-input" placeholder="输入你想说的话..." type="text">
+        <button id="send-btn">发送</button>
+    </div>
+
+    <div class="score-container">
+        当前分数: <span id="score">50</span>
+    </div>
+
+    <div class="attempts-container">
+        剩余尝试次数: <span id="attempts">10</span>
+    </div>
+
+    <button class="restart-btn hidden" id="restart-btn">重新开始</button>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const chatContainer = document.getElementById('chat-container');
+        const messageInput = document.getElementById('message-input');
+        const sendBtn = document.getElementById('send-btn');
+        const scoreElement = document.getElementById('score');
+        const attemptsElement = document.getElementById('attempts');
+        const restartBtn = document.getElementById('restart-btn');
+
+        let score = 50;
+        let attempts = 10;
+        let gameOver = false;
+
+        // 游戏开始时显示女友的第一条消息
+        addGirlfriendMessage("哼，你自己看看你干了什么！");
+
+        // 发送消息按钮点击事件
+        sendBtn.addEventListener('click', sendMessage);
+
+        // 输入框回车事件
+        messageInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // 重新开始按钮点击事件
+        restartBtn.addEventListener('click', restartGame);
+
+        // 发送消息函数
+        function sendMessage() {
+            if (gameOver) return;
+
+            const userMessage = messageInput.value.trim();
+            if (userMessage === '') return;
+
+            // 添加用户消息到聊天框
+            addUserMessage(userMessage);
+            messageInput.value = '';
+
+            // 减少尝试次数
+            attempts--;
+            attemptsElement.textContent = attempts;
+
+            // 发送到服务器获取回复
+            fetch('/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: userMessage,
+                    score: score,
+                    attempts: attempts
+                })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('服务器响应错误: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('从服务器收到的数据:', data); // 添加日志记录
+
+                    // 检查回复数据是否有效
+                    let validResponse = false;
+
+                    // 更新分数
+                    if (data && typeof data.score === 'number') {
+                        score = data.score;
+                        scoreElement.textContent = score;
+                        validResponse = true;
+                    } else {
+                        console.error('收到的分数数据无效:', data);
+                    }
+
+                    // 添加女友回复到聊天框
+                    if (data && data.reply) {
+                        addGirlfriendMessage(data.reply);
+                        validResponse = true;
+                    } else {
+                        console.error('收到的回复数据无效:', data);
+                        if (!validResponse) { // 只有在没有任何有效数据时才显示错误信息
+                            addGirlfriendMessage("对不起，我没听清你说什么...");
+                        }
+                    }
+
+                    // 检查游戏是否结束
+                    if (attempts <= 0 || score >= 100) {
+                        gameOver = true;
+                        restartBtn.classList.remove('hidden');
+                        messageInput.disabled = true;
+                        sendBtn.disabled = true;
+                    }
+                })
+                .catch(error => {
+                    console.error('请求错误:', error);
+                    addGirlfriendMessage("网络错误，请稍后再试。");
+                });
+        }
+
+        // 添加用户消息到聊天框
+        function addUserMessage(message) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', 'user-message');
+
+            // 对消息内容进行处理，让长消息更好看
+            let formattedMessage = message;
+            if (message.length > 30) {
+                // 对较长的消息添加适当的换行
+                formattedMessage = formatLongMessage(message);
+            }
+
+            messageElement.textContent = formattedMessage;
+            chatContainer.appendChild(messageElement);
+            scrollToBottom();
+        }
+
+        // 添加女友消息到聊天框
+        function addGirlfriendMessage(message) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', 'girlfriend-message');
+
+            // 对消息内容进行处理，让长消息更好看
+            let formattedMessage = message;
+            if (message.length > 30) {
+                // 对较长的消息添加适当的换行
+                formattedMessage = formatLongMessage(message);
+            }
+
+            messageElement.textContent = formattedMessage;
+            chatContainer.appendChild(messageElement);
+            scrollToBottom();
+        }
+
+        // 格式化长消息
+        function formatLongMessage(message) {
+            // 这里可以实现更复杂的格式化逻辑
+            // 这个简单实现只是确保不会有过长的单行
+            return message;
+        }
+
+        // 滚动到底部
+        function scrollToBottom() {
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        // 重新开始游戏
+        function restartGame() {
+            score = 50;
+            attempts = 10;
+            gameOver = false;
+
+            // 清空聊天框
+            chatContainer.innerHTML = '';
+
+            // 更新分数和尝试次数
+            scoreElement.textContent = score;
+            attemptsElement.textContent = attempts;
+
+            // 启用输入框和发送按钮
+            messageInput.disabled = false;
+            sendBtn.disabled = false;
+
+            // 隐藏重新开始按钮
+            restartBtn.classList.add('hidden');
+
+            // 添加女友的第一条消息
+            addGirlfriendMessage("哼，你自己看看你干了什么！");
+        }
+    });
+</script>
+</body>
+</html> 
