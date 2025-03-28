@@ -1,0 +1,22 @@
+# 这是一个生成的文件。不用于手动编辑。
+services:
+  angrygirlfriendgame:
+    build:
+      context: "D:\\git\\AngryGirlfriendGame"
+      dockerfile: "AngryGirlfriendGame/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net9.0/AngryGirlfriendGame.dll"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_STATICWEBASSETS: "/app/bin/Debug/net9.0/AngryGirlfriendGame.staticwebassets.runtime.CT.json"
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "angrygirlfriendgame:dev"
+    ports: []
+    volumes:
+    - "D:\\git\\AngryGirlfriendGame\\AngryGirlfriendGame:/app:rw"
+    - "D:\\git\\AngryGirlfriendGame:/src:rw"
+    - "C:\\Users\\Ice\\.nuget\\packages:/home/app/.nuget/packages"
+    working_dir: "/app"

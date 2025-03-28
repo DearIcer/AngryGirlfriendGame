@@ -1,0 +1,8 @@
+﻿services:
+  angrygirlfriendgame:
+    image: angrygirlfriendgame
+    build:
+      context: .
+      dockerfile: AngryGirlfriendGame/Dockerfile
+    ports:
+      - "8080:8080"  # 映射 宿主机端口:容器端口
