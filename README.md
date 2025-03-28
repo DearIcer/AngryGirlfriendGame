@@ -56,3 +56,75 @@ var systemPrompt = "你是一位二次元雌小鬼，活泼又调皮，既爱撒
                  + "{\"scoreChange\": 8, \"reply\": \"哼，知道认错就好，但下次可别再这么敷衍了哦~\"}";
 
 ```
+
+## 部署
+
+这里推荐使用docker部署，如果你是用Windows的iis，那直接把文件复制到网站目录点击运行即可。
+
+1.首先需要安装docker-desktop
+
+2.构建docker镜像
+如果你是使用rider之类开发工具，那会简单很多。只需要在dockerfile那点击构建即可，然后推送到docker空间。
+![image](https://github.com/user-attachments/assets/5f0c83ae-36aa-476b-8e6d-8a18833e395f)
+
+使用命令行构建
+
+在项目目录运行
+```
+docker-compose build
+```
+
+![image](https://github.com/user-attachments/assets/6943dd07-8c42-4d97-bf69-34327300e5ff)
+
+验证镜像是否构建成功
+
+```
+docker images
+```
+
+导出镜像为tar文件
+
+```
+docker save -o angrygirlfriendgame.tar angrygirlfriendgame
+```
+![image](https://github.com/user-attachments/assets/4b7a8a9f-58db-4ec8-9772-79ec43c94246)
+
+上传镜像到服务器
+
+![image](https://github.com/user-attachments/assets/8ff5972a-f5fb-4cba-a704-839a71949344)
+
+解压镜像
+
+```
+docker load -i angrygirlfriendgame.tar
+```
+
+![image](https://github.com/user-attachments/assets/44c39dbc-4210-4ebd-8360-bdb955c0ea8b)
+
+上传源码目录下的compose.yaml到服务器
+
+![image](https://github.com/user-attachments/assets/a341b94a-d7f7-4094-984f-43128c2c06a7)
+
+运行
+
+```
+docker-compose up -d
+```
+
+然后可以查看日志，服务是否正常启动
+
+```
+ docker-compose logs
+```
+
+![image](https://github.com/user-attachments/assets/b79290e7-7fe0-4d18-8ea2-f3c860b41631)
+
+浏览器输入部署的服务器ip和端口即可访问
+
+![image](https://github.com/user-attachments/assets/57ad0451-e537-4119-8e44-d461619d4f70)
+
+
+
+
+
+
